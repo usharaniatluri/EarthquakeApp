@@ -58,14 +58,14 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         TextView timeTextView = listItemView.findViewById(R.id.time_text_view);
 
 
-        //Now we are going to set the text from the current objects
+        // set the text from the current objects
 
         magnitude.setText(""+currentEarthquake.getMagnitude());
 
         cityName.setText(currentEarthquake.getCity());
 
         /**
-         * We have to convert UNIX Time to Regular Date
+         * convert UNIX Time to Regular Date
          */
 
         long time = currentEarthquake.getTime();
@@ -77,7 +77,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         String date = DateFormat.format("dd-MM-yyyy", calendar).toString();
 
         /**
-         * Now we are going to set the formatted date to Time TextView
+         *  set the formatted date to Time TextView
          */
 
         timeTextView.setText(date);

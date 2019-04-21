@@ -8,7 +8,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    //TODO: create a list_view.xml
+    //  code for list_view.xml
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         /*
-        Creating an Earthquake Adapter to connect our ArrayLists and ListView
+        Creating an Earthquake Adapter to connect  ArrayLists and ListView
          */
 
         EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(this,earthquakes);
