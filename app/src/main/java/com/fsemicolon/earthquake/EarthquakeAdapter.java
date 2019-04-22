@@ -1,8 +1,9 @@
 package com.fsemicolon.earthquake;
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +12,181 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+/**
+ * An {@link EarthquakeAdapter} knows how to create a list item layout for each earthquake
+ * in the data source (a list of {@link Earthquake} objects).
+ *
+ * These list item layouts will be provided to an adapter view like ListView
+ * to be displayed to the user.
+ */
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
+    /**
+     * The part of the location string from the USGS service that we use to determine
+     * whether or not there is a location offset present ("5km N of Cairo, Egypt").
+     */
     private static final String LOCATION_SEPARATOR = " of ";
 
-    public EarthquakeAdapter(Activity context, ArrayList<Earthquake> earthquakes)
-    {
-        super(context,0,earthquakes);
+    /**
+     * Constructs a new {@link EarthquakeAdapter}.
+     *
+     * @param context of the app
+     * @param earthquakes is the list of earthquakes, which is the data source of the adapter
+     */
+    public EarthquakeAdapter(Context context, List<Earthquake> earthquakes) {
+        super(context, 0, earthquakes);
+    }
+
+    /**
+     * Returns a list item view that displays information about the earthquake at the given position
+     * in the list of earthquakes.
+     */
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // Check if there is an existing list item view (called convertView) that we can reuse,
+        // otherwise, if convertView is null, then inflate a new list item layout.
+        View listItemView = convertView;
+        if (listItemView == null) {
+            listItemView = LayoutInflater.from(getContext()).inflate(
+                    R.layout.earthquake_list_item, parent, false);
+        }
+
+        // Find the earthquake at the given position in the list of earthquakes
+        Earthquake currentEarthquake = getItem(position);
+
+        // Find the TextView with view ID magnitude
+        TextView magnitudeView = (TextView) listItemView.findViewById(R.id.magnitude);
+        // Format the magnitude to show 1 decimal place
+        String formattedMagnitude = formatMagnitude(currentEarthquake.getMagnitude());
+        // Display the magnitude of the current earthquake in that TextView
+        magnitudeView.setText(formattedMagnitude);
+
+        // Set the proper background color on the magnitude circle.
+        // Fetch the background from the TextView, which is a GradientDrawable.
+        GradientDrawable magnitudeCircle = (GradientDrawable) magnitudeView.getBackground();
+        // Get the appropriate background color based on the current earthquake magnitude
+
+
+     int magnitudeColor = getMagnitudeColor(currentEarthquake.getMagnitude());
+
+
+        // Set the color on the magnitude circle
+
+        // Get the original location string from the Earthquake object,
+        // which can be in the format of "5km N of Cairo, Egypt" or "Pacific-Antarctic Ridge".
+        String originalLocation = currentEarthquake.getLocation();
+
+        // If the original location string (i.e. "5km N of Cairo, Egypt") contains
+        // a primary location (Cairo, Egypt) and a location offset (5km N of that city)
+        // then store the primary location separately from the location offset in 2 Strings,
+        // so they can be displayed in 2 TextViews.
+        String primaryLocation;
+        String locationOffset;
+
+        // Check whether the originalLocation string contains the " of " text
+        if (originalLocation.contains(LOCATION_SEPARATOR)) {
+            // Split the string into different parts (as an array of Strings)
+            // based on the " of " text. We expect an array of 2 Strings, where
+            // the first String will be "5km N" and the second String will be "Cairo, Egypt".
+            String[] parts = originalLocation.split(LOCATION_SEPARATOR);
+            // Location offset should be "5km N " + " of " --> "5km N of"
+            locationOffset = parts[0] + LOCATION_SEPARATOR;
+            // Primary location should be "Cairo, Egypt"
+            primaryLocation = parts[1];
+        } else {
+            // Otherwise, there is no " of " text in the originalLocation string.
+            // Hence, set the default location offset to say "Near the".
+            locationOffset = getContext().getString(R.string.near_the);
+            // The primary location will be the full location string "Pacific-Antarctic Ridge".
+            primaryLocation = originalLocation;
+        }
+
+        // Find the TextView with view ID location
+        TextView primaryLocationView = (TextView) listItemView.findViewById(R.id.primary_location);
+        // Display the location of the current earthquake in that TextView
+        primaryLocationView.setText(primaryLocation);
+
+        // Find the TextView with view ID location offset
+        TextView locationOffsetView = (TextView) listItemView.findViewById(R.id.location_offset);
+        // Display the location offset of the current earthquake in that TextView
+        locationOffsetView.setText(locationOffset);
+
+        // Create a new Date object from the time in milliseconds of the earthquake
+        Date dateObject = new Date(currentEarthquake.getTimeInMilliseconds());
+
+        // Find the TextView with view ID date
+        TextView dateView = (TextView) listItemView.findViewById(R.id.date);
+        // Format the date string (i.e. "Mar 3, 1984")
+        String formattedDate = formatDate(dateObject);
+        // Display the date of the current earthquake in that TextView
+        dateView.setText(formattedDate);
+
+        // Find the TextView with view ID time
+        TextView timeView = (TextView) listItemView.findViewById(R.id.time);
+        // Format the time string (i.e. "4:30PM")
+        String formattedTime = formatTime(dateObject);
+        // Display the time of the current earthquake in that TextView
+        timeView.setText(formattedTime);
+
+        // Return the list item view that is now showing the appropriate data
+        return listItemView;
+    }
+
+    /**
+     * Return the color for the magnitude circle based on the intensity of the earthquake.
+     *
+     * @param magnitude of the earthquake
+     */
+    private int getMagnitudeColor(double magnitude) {
+        int magnitudeColorResourceId;
+        int magnitudeFloor = (int) Math.floor(magnitude);
+        switch (magnitudeFloor) {
+            case 0:
+            case 1:
+                magnitudeColorResourceId = R.color.magnitude1;
+                break;
+            case 2:
+                magnitudeColorResourceId = R.color.magnitude2;
+                break;
+            case 3:
+                magnitudeColorResourceId = R.color.magnitude3;
+                break;
+            case 4:
+                magnitudeColorResourceId = R.color.magnitude4;
+                break;
+            case 5:
+                magnitudeColorResourceId = R.color.magnitude5;
+                break;
+            case 6:
+                magnitudeColorResourceId = R.color.magnitude6;
+                break;
+            case 7:
+                magnitudeColorResourceId = R.color.magnitude7;
+                break;
+            case 8:
+                magnitudeColorResourceId = R.color.magnitude8;
+                break;
+            case 9:
+                magnitudeColorResourceId = R.color.magnitude9;
+                break;
+            default:
+                magnitudeColorResourceId = R.color.magnitude10plus;
+                break;
+        }
+
+        return ContextCompat.getColor(getContext(), magnitudeColorResourceId);
+    }
+
+    /**
+     * Return the formatted magnitude string showing 1 decimal place (i.e. "3.2")
+     * from a decimal magnitude value.
+     */
+    private String formatMagnitude(double magnitude) {
+        DecimalFormat magnitudeFormat = new DecimalFormat("0.0");
+        return magnitudeFormat.format(magnitude);
     }
 
     /**
@@ -39,132 +205,4 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         return timeFormat.format(dateObject);
     }
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
-        View listItemView = convertView;
-        //If the list View is null then we populate it with our List View
-
-        if (listItemView==null)
-        {
-            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.list_view,parent,false);
-
-        }
-
-        /**
-         * Now we are going to create an object for our Earthquake
-         */
-
-        Earthquake currentEarthquake = getItem(position);
-
-        /**
-         * Create TextViews for
-         * 1. Magnitude
-         * 2. City Name
-         * 3. Time
-         */
-
-        TextView magnitude = listItemView.findViewById(R.id.magintude_text_view);
-
-
-
-        TextView dateTextView = listItemView.findViewById(R.id.date_text_view);
-
-        TextView timeTextView = listItemView.findViewById(R.id.time_text_view);
-
-        //Now we are going to set the text from the current objects
-        //Sometimes the magnitudes are in the range of 7.298 but we only need 7.2
-        //So we are going to use decimal formatter
-
-        DecimalFormat decimalFormat = new DecimalFormat("0.0");
-
-        String magnitudeString = decimalFormat.format(currentEarthquake.getMagnitude());
-
-
-        magnitude.setText(magnitudeString);
-
-
-
-        /**
-         * We have to convert UNIX Time to Regular Date
-         */
-
-        // Create a new Date object from the time in milliseconds of the earthquake
-
-        Date dateObject = new Date(currentEarthquake.getTime());
-
-        // Format the date string (i.e. "Mar 3, 1984")
-
-        String formattedDate = formatDate(dateObject);
-
-        // Display the date of the current earthquake in that TextView
-
-        dateTextView.setText(formattedDate);
-
-        // Format the time string (i.e. "4:30PM")
-
-        String formattedTime = formatTime(dateObject);
-
-        // Display the time of the current earthquake in that TextView
-
-        timeTextView.setText(formattedTime);
-
-
-        /**
-         * Let's split the locations based on location offset and primary location
-         */
-
-        String originalLocation = currentEarthquake.getCity();
-
-        // If the original location string (i.e. "5km N of Cairo, Egypt") contains
-        // a primary location (Cairo, Egypt) and a location offset (5km N of that city)
-        // then store the primary location separately from the location offset in 2 Strings,
-        // so they can be displayed in 2 TextViews.
-
-        String primaryLocation;
-
-        String locationOffset;
-
-        // Check whether the originalLocation string contains the " of " text
-        if (originalLocation.contains(LOCATION_SEPARATOR)) {
-
-            // Split the string into different parts (as an array of Strings)
-            // based on the " of " text. We expect an array of 2 Strings, where
-            // the first String will be "5km N" and the second String will be "Cairo, Egypt".
-
-            String[] parts = originalLocation.split(LOCATION_SEPARATOR);
-            // Location offset should be "5km N " + " of " --> "5km N of"
-            locationOffset = parts[0] + LOCATION_SEPARATOR;
-
-            // Primary location should be "Cairo, Egypt"
-            primaryLocation = parts[1];
-        }
-        else {
-            // Otherwise, there is no " of " text in the originalLocation string.
-            // Hence, set the default location offset to say "Near the".
-
-            locationOffset = getContext().getString(R.string.near_the);
-            // The primary location will be the full location string "Pacific-Antarctic Ridge".
-
-            primaryLocation = originalLocation;
-        }
-
-        //TextView for Offset Location
-
-        TextView offsetLocationTextView = listItemView.findViewById(R.id.offset_location_text_view);
-
-        offsetLocationTextView.setText(locationOffset);
-
-        //TextView for Primary Location
-
-        TextView primaryLocationTextView = listItemView.findViewById(R.id.primary_city_location);
-
-        primaryLocationTextView.setText(primaryLocation);
-
-
-
-
-        return listItemView;
-    }
 }
