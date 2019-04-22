@@ -14,19 +14,33 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/city_text_view"
-        android:text="Rome"
+        android:id="@+id/offset_location_text_view"
+        android:text="30 KM North Of"
         android:padding="10dp"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/primary_city_location"
+        android:text="Rome"
+        android:layout_width="0dp"
+        android:padding="10dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
 
     <TextView
-        android:id="@+id/time_text_view"
+        android:id="@+id/date_text_view"
         android:text="21 April 2019"
         android:layout_width="0dp"
         android:padding="10dp"
         android:layout_weight="1"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/time_text_view"
+        android:text="3:00 Pm"
+        android:padding="10dp"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content" />
 
 

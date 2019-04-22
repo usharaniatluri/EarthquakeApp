@@ -1,8 +1,5 @@
 package com.fsemicolon.earthquake;
 
-//this is a comment
-
-
 public class Earthquake {
 
     private double mMagnitude;
