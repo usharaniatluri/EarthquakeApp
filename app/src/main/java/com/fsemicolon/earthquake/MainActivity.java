@@ -8,7 +8,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    //  code for list_view.xml
+    // writing code for list_view.xml
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
