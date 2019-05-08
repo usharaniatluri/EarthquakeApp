@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderCallbacks<List<Earthquake>>,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        implements LoaderCallbacks<List<Earthquake>>
+        // SharedPreferences.OnSharedPreferenceChangeListener
+{
 
     private static final String LOG_TAG = MainActivity.class.getName();
 
@@ -62,11 +64,19 @@ public class MainActivity extends AppCompatActivity
         earthquakeListView.setAdapter(mAdapter);
 
         // Obtain a reference to the SharedPreferences file for this app
+
+    /*commented by me
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+
+
         // And register to be notified of preference changes
         // So we know when the user has adjusted the query settings
-        prefs.registerOnSharedPreferenceChangeListener(this);
 
+
+       prefs.registerOnSharedPreferenceChangeListener(this);
+
+ended by me*/
         // Set an item click listener on the ListView, which sends an intent to a web browser
         // to open a website with more information about the selected earthquake.
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -112,26 +122,27 @@ public class MainActivity extends AppCompatActivity
             mEmptyStateTextView.setText(R.string.no_internet_connection);
         }
     }
+    /*comented by me
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+           Log.d("shared","this is into");
+            if (key.equals(getString(R.string.settings_min_magnitude_key)) ||
+                    key.equals(getString(R.string.settings_order_by_key))){
+                // Clear the ListView as a new query will be kicked off
+                mAdapter.clear();
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        if (key.equals(getString(R.string.settings_min_magnitude_key)) ||
-                key.equals(getString(R.string.settings_order_by_key))){
-            // Clear the ListView as a new query will be kicked off
-            mAdapter.clear();
+                // Hide the empty state text view as the loading indicator will be displayed
+                mEmptyStateTextView.setVisibility(View.GONE);
 
-            // Hide the empty state text view as the loading indicator will be displayed
-            mEmptyStateTextView.setVisibility(View.GONE);
+                // Show the loading indicator while new data is being fetched
+                View loadingIndicator = findViewById(R.id.loading_indicator);
+                loadingIndicator.setVisibility(View.VISIBLE);
 
-            // Show the loading indicator while new data is being fetched
-            View loadingIndicator = findViewById(R.id.loading_indicator);
-            loadingIndicator.setVisibility(View.VISIBLE);
-
-            // Restart the loader to requery the USGS as the query settings have been updated
-            getLoaderManager().restartLoader(EARTHQUAKE_LOADER_ID, null, this);
+                // Restart the loader to requery the USGS as the query settings have been updated
+                getLoaderManager().restartLoader(EARTHQUAKE_LOADER_ID, null, this);
+            }
         }
-    }
-
+    ended by */
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
 
@@ -149,7 +160,7 @@ public class MainActivity extends AppCompatActivity
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
         uriBuilder.appendQueryParameter("format", "geojson");
-        uriBuilder.appendQueryParameter("limit", "10");
+        //   uriBuilder.appendQueryParameter("limit", "10");
         uriBuilder.appendQueryParameter("minmag", minMagnitude);
         uriBuilder.appendQueryParameter("orderby", orderBy);
 
@@ -172,7 +183,8 @@ public class MainActivity extends AppCompatActivity
         // data set. This will trigger the ListView to update.
         if (earthquakes != null && !earthquakes.isEmpty()) {
             mAdapter.addAll(earthquakes);
-           }
+        }
+
     }
 
     @Override
