@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity
 
     /** URL for earthquake data from the USGS dataset */
     private static final String USGS_REQUEST_URL =
-            "https://earthquake.usgs.gov/fdsnws/event/1/query";
-
+        "https://earthquake.usgs.gov/fdsnws/event/1/query";
+     //"https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-01-02";
     /**
      * Constant value for the earthquake loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
@@ -177,7 +177,7 @@ ended by me*/
         mEmptyStateTextView.setText(R.string.no_earthquakes);
 
         // Clear the adapter of previous earthquake data
-        //mAdapter.clear();
+        mAdapter.clear();
 
         // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
