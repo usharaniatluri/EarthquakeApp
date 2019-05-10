@@ -24,7 +24,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderCallbacks<List<Earthquake>>
-        // SharedPreferences.OnSharedPreferenceChangeListener
+
 {
 
     private static final String LOG_TAG = MainActivity.class.getName();
@@ -122,27 +122,7 @@ ended by me*/
             mEmptyStateTextView.setText(R.string.no_internet_connection);
         }
     }
-    /*comented by me
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-           Log.d("shared","this is into");
-            if (key.equals(getString(R.string.settings_min_magnitude_key)) ||
-                    key.equals(getString(R.string.settings_order_by_key))){
-                // Clear the ListView as a new query will be kicked off
-                mAdapter.clear();
 
-                // Hide the empty state text view as the loading indicator will be displayed
-                mEmptyStateTextView.setVisibility(View.GONE);
-
-                // Show the loading indicator while new data is being fetched
-                View loadingIndicator = findViewById(R.id.loading_indicator);
-                loadingIndicator.setVisibility(View.VISIBLE);
-
-                // Restart the loader to requery the USGS as the query settings have been updated
-                getLoaderManager().restartLoader(EARTHQUAKE_LOADER_ID, null, this);
-            }
-        }
-    ended by */
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
 
